@@ -47,6 +47,7 @@ class LivySparkBatchOperator(BaseOperator):
             self,
             application_file,
             class_name,
+            job_args,
             session_config,  # configuration as json (driverMemory etc)
             http_conn_id='http_default',
             poll_interval=10,
@@ -55,6 +56,7 @@ class LivySparkBatchOperator(BaseOperator):
 
         self.application_file = application_file
         self.class_name = class_name
+        self.job_args = job_args
         self.session_config = session_config
         self.http_conn_id = http_conn_id
         self.poll_interval = poll_interval
@@ -123,10 +125,11 @@ class LivySparkBatchOperator(BaseOperator):
         endpoint = "batches"
         application_jar_file = {"file": self.application_file}
         application_class_name = {"className": self.class_name}
+        application_args = {"args": self.job_args.split(",")}
         raw_data = self.session_config
         raw_data.update(application_jar_file)
         raw_data.update(application_class_name)
-        print(raw_data)
+        raw_data.update(application_args)
         string_data = json.dumps(raw_data)
         data = json.loads(string_data)
         logging.info("Executing Spark batch: \n" + str(self.class_name))
