@@ -15,7 +15,7 @@ Pre-run Steps:
     3. Set the host
     4. Set the port (default for livy is 8998)
     5. Save
-4. Add the SPARK_HOME for your machine
+4. save spark_test.py file in a specified location
 5. Remove jars parameter
 """
 
@@ -30,7 +30,7 @@ default_args = {
     }
 
 dag = DAG(DAG_ID, default_args=default_args, schedule_interval=None, start_date=(datetime.now() - timedelta(minutes=1)))
-SPARK_HOME="/opt/spark"
+LOCAL_HOME="/opt/myhome/"
 import json
 config_parameters = {
   "proxyUser": "spark", # Remove if you want to run as local user
@@ -39,15 +39,13 @@ config_parameters = {
   "driverMemory": "1g",
   "conf": {"spark.yarn.maxAppAttempts": "1", "spark.network.timeout": "1500s"}
 }
-APPLICATION_JAR = SPARK_HOME + "/examples/jars/spark-examples_2.11-2.4.4.jar"
-java_class = "org.apache.spark.examples.SparkPi"
+PYTHON_FILE = LOCAL_HOME + "spark_test.py"
 SESSION_CONFIG = json.loads(config_parameters)
-application_file = "local:" + APPLICATION_JAR
+application_file = "local:" + PYTHON_FILE
 
 dummy = LivySparkBatchOperator(
-    task_id=java_class.rsplit(".", 1)[1],
+    task_id="python_test_task",
     application_file=application_file,
-    class_name=java_class,
     http_conn_id="livy_http_conn",
     session_config=SESSION_CONFIG,
     poll_interval=3,
