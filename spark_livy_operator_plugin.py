@@ -26,10 +26,12 @@ class LivySparkBatchOperator(BaseOperator):
     """
    Operator to facilitate interacting with the Livy Server which executes Apache Spark code via a REST API.
 
-   :param application_file: the application file typically a jar file (templated)
+   :param application_file: the application file typically a jar file
    :type application_file: string
-   :param session_config: Type of session to setup with Livy. This will determine which type of code will be accepted. Possible values include "spark" (executes Scala code), "pyspark" (executes Python code) or "sparkr" (executes R code).
-   :type session_config: string
+   :param class_name: the class name containing main
+   :type class_name: string
+   :param session_config: The configuration params to be sent such as driverMemory, executorMemory etc.
+   :type session_config: json
    :param http_conn_id: The http connection to run the operator against
    :type http_conn_id: string
    :param poll_interval: The polling interval to use when checking if the code in spark_script has finished executing. In seconds. (default: 30 seconds)
@@ -47,7 +49,6 @@ class LivySparkBatchOperator(BaseOperator):
             self,
             application_file,
             class_name,
-            job_args,
             session_config,  # configuration as json (driverMemory etc)
             http_conn_id='http_default',
             poll_interval=10,
@@ -56,7 +57,6 @@ class LivySparkBatchOperator(BaseOperator):
 
         self.application_file = application_file
         self.class_name = class_name
-        self.job_args = job_args
         self.session_config = session_config
         self.http_conn_id = http_conn_id
         self.poll_interval = poll_interval
